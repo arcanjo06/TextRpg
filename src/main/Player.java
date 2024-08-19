@@ -4,6 +4,8 @@ public class Player extends Character {
     //Numero de Upgrades em cada Path
     public int numAtkUpgrades,numDefUpgrades;
 
+    int grana,bandagens;
+
     //Upgrades
     public String[] atkupgrades={"Força", "Poder", "Raiva", "Força Divina"};
     public String[] defupgrades={"Ossos Pesados", "Pele de Pedra", "Esquiva Perfeita", "Aura Divina"};
@@ -17,6 +19,8 @@ public class Player extends Character {
         this.numAtkUpgrades=0;
         this.numDefUpgrades=0;
         //Opção de criar o traço
+        this.grana=5;
+        this.bandagens=2;
         chooseTrait();
     }
 

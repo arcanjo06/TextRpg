@@ -11,7 +11,7 @@ public class GameLogic {
     static Scanner scanner= new Scanner(System.in);
     static Random random = new Random();
     
-    public static String[] encounters={"Batalha" ,"Batalha","Batalha","Batalha","Descanso","Descanso"};
+    public static String[] encounters={"Batalha" ,"Batalha","Batalha","Batalha","Descanso","Descanso","Shop"};
 
     public static String[] enemies={"Zumbi", "Zumbi Apodrecido","Zumbi sem braço", "Zumbi Gordo", "Zumbi Hippie", "Zumbi Grande"};
 
@@ -160,11 +160,38 @@ public class GameLogic {
             randomBattle();
         }else if (encounters[encounter].equals("Descanso")) {
             randomRest();
+        }else if(encounters[encounter].equals("Shop")){
+            shop();
+        }
+    }
+    public static void shop(){
+        clearConsole();
+        printHeading("Você encontra um humano estranho que vende coisas");
+        System.out.println("Sua Grana: "+player.grana+"R$");
+        int price=(int)(Math.random()*(10+player.bandagens*3)+10);
+        System.out.println("-Bandagem: "+price+"R$");
+        printSeparator(20);
+        System.out.println("Quer comprar uma?\n(1)Sim\n(2)Agora não");
+        int input=readInt("-->", 2);
+        if (input==1) {
+            if (player.grana<price) {
+                clearConsole();
+                System.out.println("Você não tem grana suficiente");
+                anythingContinue();
+            }else{
+                clearConsole();
+                player.grana-=price;
+                player.bandagens++;
+                printHeading("Você comprou uma bandagem por "+price+"R$");
+                anythingContinue();
+            }
+        }else{
+
         }
     }
     public static void randomRest(){
         clearConsole();
-        int hpRestored=(int) (Math.random()*(player.hp/8+10));
+        int hpRestored=(int) (Math.random()*(player.hp/8+5));
         String[] restEvents={
             "Você encontra uma pequena cabana escondida entre as árvores. Ao entrar, o cheiro de lenha queimada ainda persiste no ar. Após trancar a porta, você se deita em uma cama improvisada. A noite é tranquila, e você acorda sentindo-se revigorado. (Recuperou "+hpRestored+"HP)",
     
@@ -222,14 +249,40 @@ public class GameLogic {
                     playerDied();
                     break;
                 }else if (enemy.hp<=0) {
+                    clearConsole();
                     System.out.println("Você derrotou o "+enemy.name+" !!");
                     player.xp+=enemy.xp;
                     System.out.println("Você ganhou "+enemy.xp+ " xp!!");
+                    int granaGanha=(int)(Math.random()*enemy.xp);
+                    if (granaGanha>0) {
+                        System.out.println("Você achou "+granaGanha+"R$ no corpo morto");
+                        player.grana+=granaGanha;
+                    }
                     anythingContinue();
                     break;
                 }
             }else if (input==2) {
-                //curar();
+                clearConsole();
+                if(player.bandagens>0 && player.hp<player.max_hp){
+                    printHeading("Você tem certeza que quer se curar? ("+player.bandagens+" Bandagens restantes)");
+                    System.out.println("(1)Sim\n(2)Não, Agora não");
+                    input= readInt("-->", 2);
+                    if (input==1) {
+                        player.hp+=20;
+                        if (player.hp>player.max_hp) {
+                            player.hp=player.max_hp;
+                        }
+                        clearConsole();
+                        player.bandagens--;
+                        printHeading("Você gastou uma bandagem e curou 20HP");
+                        anythingContinue();
+                    }else{
+
+                    }
+                }else{
+                    printHeading("Você não pode ou não precisa se curar");
+                    anythingContinue();
+                }
             }else{
                 clearConsole();
                 if (Math.random()*10>=3.5) {
@@ -265,7 +318,9 @@ public class GameLogic {
         printHeading("STATUS");
         System.out.println(player.name+"\tHP: " +player.hp+"/"+player.max_hp);
         printSeparator(30);
-        System.out.println("XP: "+player.xp);
+        System.out.println("XP: "+player.xp+"\tGrana: "+player.grana+"R$");
+        System.out.println("Bandagens: "+player.bandagens);
+        printSeparator(30);
 
         if ( player.numAtkUpgrades>0) {
             System.out.println("Traços de Ataque: "+player.atkupgrades[player.numAtkUpgrades-1]);
